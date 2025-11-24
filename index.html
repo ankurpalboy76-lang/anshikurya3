@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ankur — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#00e6ff;
+    --glass-bg: rgba(255,255,255,0.10);
+    --glass-border: rgba(255,255,255,0.25);
+    --muted: rgba(255,255,255,0.88);
+    --max-width:1200px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:'Poppins',system-ui,Arial;background:#000;color:#fff;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+
+  /* --- Background video (FULLSCREEN, user will upload bg.mp4) --- */
+  .bg-video{
+    position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;
+  }
+
+  /* keep content readable (user asked option 1: FULL video, no dark overlay) */
+  /* but still slightly lift text with soft text-shadow */
+  .page { position:relative; z-index: 2; }
+
+  /* NAV */
+  nav{
+    position:fixed;left:50%;transform:translateX(-50%);top:18px;z-index:50;
+    display:flex;gap:14px;padding:6px 12px;border-radius:14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+  }
+  nav a{ display:block;padding:10px 16px;border-radius:10px;color:var(--muted);font-weight:600;transition: all .18s; }
+  nav a:hover{ color:#fff; transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,230,255,0.06) }
+
+  main{ max-width:var(--max-width); margin:0 auto; }
+
+  /* SECTION BASE */
+  section{ padding:100px 20px; min-height:calc(100vh - 140px); display:flex; align-items:center; justify-content:center; flex-direction:column; gap:18px; }
+  h1,h2{ color:var(--accent); text-align:center; text-shadow:0 10px 30px rgba(0,230,255,0.06) }
+  p{ color:rgba(255,255,255,0.92); text-align:center; max-width:900px; line-height:1.6; }
+
+  /* GLASS BOX */
+  .glass{
+    background: var(--glass-bg);
+    padding:22px;
+    border-radius:16px;
+    border:1px solid var(--glass-border);
+    backdrop-filter: blur(10px) saturate(110%);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  }
+
+  /* HERO */
+  #home { padding-top:140px; gap:12px; }
+  .hero-title{ font-size:44px; font-weight:700; margin-bottom:6px; }
+  .hero-sub{ font-size:18px; opacity:0.95; }
+
+  /* PROJECTS GRID (compact spacing) */
+  #projects .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap:14px;
+    width:100%;
+    max-width:1100px;
+  }
+  .proj{
+    border-radius:14px; overflow:hidden; position:relative; cursor:pointer;
+    border: 1px solid rgba(255,255,255,0.08);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12));
+    transition: transform .28s, box-shadow .28s;
+  }
+  .proj img{ width:100%; height:220px; object-fit:cover; display:block; }
+  .proj .meta{ padding:12px 14px; text-align:left; }
+  .proj h3{ font-size:18px; margin-bottom:6px; color:var(--muted); }
+  .proj p{ font-size:14px; color:rgba(255,255,255,0.85) }
+  .proj:hover{ transform: translateY(-8px); box-shadow:0 18px 50px rgba(0,200,255,0.06); }
+
+  /* TESTIMONIALS: circular, auto-rotate carousel */
+  #testimonials .carousel{ width:100%; max-width:900px; position:relative; overflow:visible; display:flex; gap:14px; justify-content:center; align-items:center; }
+  .test-card{ width:280px; min-height:140px; border-radius:14px; padding:18px; display:flex; flex-direction:column; justify-content:space-between; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); }
+  .test-card p{ color:rgba(255,255,255,0.95); line-height:1.5 }
+  .test-card .who{ margin-top:12px; font-weight:700; color:var(--accent) }
+
+  /* CONTACT */
+  #contact .socials{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:18px }
+  .social{
+    display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+    border:1px solid rgba(255,255,255,0.12); color: #fff; font-weight:700; transition: transform .18s;
+  }
+  .social:hover{ transform: translateY(-6px); box-shadow:0 18px 40px rgba(0,200,255,0.06) }
+
+  /* compact spacing adjustments */
+  @media (max-width:900px){
+    .hero-title{ font-size:32px }
+    .proj img{ height:160px }
+    section{ padding:80px 16px; min-height:unset }
+  }
+
+  /* --- Scroll animation classes --- */
+  .reveal{ opacity:0; transform: translateY(20px); transition: all .7s cubic-bezier(.2,.9,.2,1); }
+  .reveal.visible{ opacity:1; transform: translateY(0); }
+
+  /* small utilities */
+  .muted{ color: rgba(255,255,255,0.75); font-size:14px }
+</style>
+</head>
+<body>
+
+  <!-- background video: put your bg.mp4 in same folder -->
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="bg.mp4" type="video/mp4">
+  </video>
+
+  <div class="page">
+
+    <!-- NAV -->
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#projects">Projects</a>
+      <a href="#about">About</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <main>
+
+      <!-- HOME -->
+      <section id="home" class="reveal">
+        <div class="glass">
+          <div class="hero-title">Hi, I'm Ankur</div>
+          <div class="hero-sub muted">Creative Graphic Designer — thumbnails, posters, mockups & typography.</div>
+        </div>
+      </section>
+
+      <!-- PROJECTS -->
+      <section id="projects">
+        <h2 class="reveal">Projects</h2>
+        <div class="grid" id="projectsGrid">
+          <!-- Replace project images with your own in projects/ folder -->
+          <div class="proj reveal">
+            <img src="projects/p1.jpg" alt="Project 1">
+            <div class="meta">
+              <h3>Thumbnail Pack</h3>
+              <p>High-CTR YouTube thumbnails with bold typography.</p>
+            </div>
+          </div>
+
+          <div class="proj reveal">
+            <img src="projects/p2.jpg" alt="Project 2">
+            <div class="meta">
+              <h3>Poster Design</h3>
+              <p>Event posters & social banners with vivid colors.</p>
+            </div>
+          </div>
+
+          <div class="proj reveal">
+            <img src="projects/p3.jpg" alt="Project 3">
+            <div class="meta">
+              <h3>Mockup Series</h3>
+              <p>Realistic device mockups & product presentations.</p>
+            </div>
+          </div>
+
+          <div class="proj reveal">
+            <img src="projects/p4.jpg" alt="Project 4">
+            <div class="meta">
+              <h3>Typography Study</h3>
+              <p>Type-driven layouts & expressive headlines.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about">
+        <h2 class="reveal">About Me</h2>
+        <div class="glass reveal" style="max-width:900px;">
+          <p>
+            I am a dedicated graphic designer who blends clean composition with bold color and clear hierarchy.
+            I make thumbnails, posters, mockups and typographic layouts that perform. I focus on quick iterations,
+            strong visual storytelling and delivering polished assets that help creators and brands stand out.
+          </p>
+        </div>
+      </section>
+
+      <!-- TESTIMONIALS -->
+      <section id="testimonials">
+        <h2 class="reveal">Testimonials</h2>
+        <div class="carousel reveal" id="testCarousel" aria-live="polite">
+          <div class="test-card">
+            <p>"Ankur's thumbnails increased our CTR by 40% — creative and fast."</p>
+            <div class="who">— Rajesh, Creator</div>
+          </div>
+          <div class="test-card">
+            <p>"Great sense of color and composition. Professional and reliable."</p>
+            <div class="who">— Nisha, Brand</div>
+          </div>
+          <div class="test-card">
+            <p>"Delivered high-quality posters on time. Highly recommended."</p>
+            <div class="who">— Sandeep, Startup</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact">
+        <h2 class="reveal">Contact</h2>
+        <div class="glass reveal">
+          <p class="muted">Reach out on social platforms — click any button below.</p>
+          <div class="socials" role="list">
+            <a class="social" href="https://www.tiktok.com/@roxlife00" target="_blank" rel="noopener">🎵 TikTok</a>
+            <a class="social" href="https://www.instagram.com/ankur_artdesign007?igsh=MWhkYmI4eW8xY3RkcA==&utm_source=ig_contact_invite" target="_blank" rel="noopener">📸 Instagram</a>
+            <a class="social" href="https://wa.me/919548732285" target="_blank" rel="noopener">💬 WhatsApp</a>
+            <a class="social" href="https://t.me/hown3" target="_blank" rel="noopener">📨 Telegram</a>
+            <a class="social" href="https://youtube.com/@ankurartdesign?si=YMsCIrhIsuOmQf_r" target="_blank" rel="noopener">▶ YouTube</a>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+<script>
+  // Smooth-scroll nav links
+  document.querySelectorAll('nav a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  // IntersectionObserver for reveal animations
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(ent=>{
+      if(ent.isIntersecting){
+        ent.target.classList.add('visible');
+      }
+    });
+  }, {threshold: 0.12});
+
+  document.querySelectorAll('.reveal').forEach(el=>{
+    io.observe(el);
+  });
+
+  // Simple testimonials auto-rotate carousel
+  (function(){
+    const carousel = document.getElementById('testCarousel');
+    if(!carousel) return;
+    const cards = Array.from(carousel.children);
+    let idx = 0;
+    function show(i){
+      cards.forEach((c,ci)=>{
+        c.style.display = ci===i?'flex':'none';
+      });
+    }
+    show(0);
+    setInterval(()=>{ idx = (idx+1)%cards.length; show(idx); }, 4500);
+  })();
+
+  // Lazy-load project images (optional)
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.querySelectorAll('.proj img').forEach(img=>{
+      img.loading = 'lazy';
+      // if placeholder, you can set a tiny base64 or blank
+    });
+  });
+</script>
+</body>
+</html>
